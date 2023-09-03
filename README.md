@@ -15,6 +15,6 @@ When starting an instance, a Lambda Function will first restore a EBS Snapshot a
 - SSM (For storing the EBS Snapshot ID)
 
 ## Deployment
-´´´
+```
 deploy.py -h
-´´´
+```
