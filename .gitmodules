@@ -1,0 +1,3 @@
+[submodule "aws_cdl"]
+	path = aws_cdl
+	url = https://github.com/EverSoJoe/aws_cdl.git
