@@ -1,0 +1,55 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: |
+  Author: eversojoe@github
+  Deploys tool to save cost on ebs volumes for a specific instance that is not run 24/7
+Parameters:
+  InstanceId:
+    Type: String
+    Description: Instance ID of the instance that should be controlled 
+  LambdaCodeBucket:
+    Type: String
+    Description: Name of the Bucket the Lambda code resides in
+  LambdaStartCodeKey:
+    Type: String
+    Description: Name of the Bucket key the Start Lambda code resides on
+  LambdaStopCodeKey:
+    Type: String
+    Description: Name of the Bucket key the Stop Lambda code resides on
+
+Resources:
+  SSMPARAMETER:
+    Type: AWS::SSM::Parameter
+    Properties:
+      Type: String
+      Value: NaN
+  ROLE:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument: JSON # Required
+      ManagedPolicyArns: 
+        ManagedPolicyArns
+      Policies: 
+        Policies
+  LAMBDASTART:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: "String"
+        S3Key: "String"
+      Environment:
+      Handler: "String"
+      Role: "String" # Required
+      Runtime: "String"
+      Timeout: 360
+
+  LAMBDASTOP:
+    Type: AWS::Lambda::Function
+    Properties:
+      Code:
+        S3Bucket: "String"
+        S3Key: "String"
+      Environment:
+      Handler: "String"
+      Role: "String" # Required
+      Runtime: "String"
+      Timeout: 360
