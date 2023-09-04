@@ -3,6 +3,8 @@ This project contains two AWS Lambda Functions written in Python to start and st
 
 This assumes you are already using an EC2 Instance that you want to save cost on due to it not running 24/7
 
+Currently this only works with instances with only one EBS volume attached
+
 ## Stopping an instance
 When stopping an instance, a Lambda Function will first stop the EC2 Instance, then create an EBS Snapshot of the EBS Volume attached to the EC2 Instance. After that is done, it will detach and delete the EBS Volume.
 

@@ -6,6 +6,9 @@ Parameters:
   InstanceId:
     Type: String
     Description: Instance ID of the instance that should be controlled 
+  MountPoint:
+    Type: String
+    Description: Mount point (Device) to which the restored volume should be mounted to
   LambdaCodeBucket:
     Type: String
     Description: Name of the Bucket the Lambda code resides in
@@ -34,22 +37,29 @@ Resources:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        S3Bucket: "String"
-        S3Key: "String"
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaStartCodeKey
       Environment:
-      Handler: "String"
-      Role: "String" # Required
-      Runtime: "String"
+        Variables:
+          MOUNT_POINT: !Ref MountPoint
+          SSM_PARAMETER: !Ref SSMPARAMETER
+          INSTANCE_ID: !Ref InstanceId
+      Handler: function.handler
+      Role: !Ref ROLE 
+      Runtime: python3.11
       Timeout: 360
 
   LAMBDASTOP:
     Type: AWS::Lambda::Function
     Properties:
       Code:
-        S3Bucket: "String"
-        S3Key: "String"
+        S3Bucket: !Ref LambdaCodeBucket
+        S3Key: !Ref LambdaStopCodeKey
       Environment:
-      Handler: "String"
-      Role: "String" # Required
-      Runtime: "String"
+        Variables:
+          SSM_PARAMETER: !Ref SSMPARAMETER
+          INSTANCE_ID: !Ref InstanceId
+      Handler: function.handler
+      Role: !Ref ROLE 
+      Runtime: python3.11
       Timeout: 360
