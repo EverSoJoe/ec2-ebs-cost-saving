@@ -28,11 +28,39 @@ Resources:
   ROLE:
     Type: AWS::IAM::Role
     Properties:
-      AssumeRolePolicyDocument: JSON # Required
-      ManagedPolicyArns: 
-        ManagedPolicyArns
-      Policies: 
-        Policies
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+      Policies:
+        - PolicyName: LambdaExecutionPolicy
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              - Effect: Allow
+                Action:
+                  - 'ec2:DescribeInstances'
+                  - 'ec2:StopInstances'
+                  - 'ec2:DescribeVolumes'
+                  - 'ec2:CreateSnapshot'
+                  - 'ec2:PutSnapshotBlock'
+                  - 'ec2:CreateTags'
+                  - 'ec2:DetachVolume'
+                  - 'ec2:DeleteVolume'
+                  - 'ssm:GetParameter'
+                  - 'ssm:PutParameter'
+                Resource:
+                  - !Sub "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${InstanceID}"
+                  - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${SSMPARAMETER}"
   LAMBDASTART:
     Type: AWS::Lambda::Function
     Properties:
