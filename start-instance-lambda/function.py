@@ -16,6 +16,13 @@ def handler(event, context):
         VolumeType='gp3'
     )
     volume_id = response['VolumeId']
+    available = False
+    while not available:
+        response = ec2.describe_volumes(VolumeIds=[volume_id])
+        if response['Volumes'] == []:
+            continue
+        if response['Volumes'][0]['State'] == 'available':
+            available = True
     ec2.attach_volume(
         Device=mount_point,
         InstanceId=instance_id,
