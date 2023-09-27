@@ -3,6 +3,7 @@
 import argparse
 from datetime import datetime
 
+import boto3
 import aws_cdl
 
 parser = argparse.ArgumentParser(description='Tool to deploy ec2-ebs-cost-saving')
@@ -20,7 +21,12 @@ stack_name = 'start-stop-%s' %(args.instanceid)
 lambda_start_key = 'start-instance-%s' %(datetime.now().isoformat())
 lambda_stop_key = 'stop-instance-%s' %(datetime.now().isoformat())
 if not args.bucket:
-    account_alias = boto3.Session(profile_name=args.profile, region_name = args.region).client('iam').list_account_aliases()['AccountAliases'][0]
+    response = boto3.Session(profile_name=args.profile, region_name = args.region).client('iam').list_account_aliases()
+    if response['AccountAliases'] == []:
+        response = boto3.Session(profile_name=args.profile, region_name = args.region).client('sts').get_caller_identity()
+        account_alias = response['Account']
+    else:
+        account_alias = response['AccountAliases'][0]
     setattr(args, 'bucket', '%s-lambda-code' %(account_alias))
 cfn_parameters = [
     {'ParameterKey': 'InstanceId',
@@ -36,13 +42,13 @@ cfn_parameters = [
 ]
 cfn_client = aws_cdl.create_cf_client(args.profile, args.region)
 
-if delete_stack:
+if args.delete:
     aws_cdl.delete_stack(cfn_client, stack_name)
 else:
-    aws_cdl.upload_lambda_package(args.profile, 'start-instance-lambda', args.bucket, lambda_start_key, args.region)
-    aws_cdl.upload_lambda_package(args.profile, 'stop-instance-lambda', args.bucket, lambda_stop_key, args.region)
+    aws_cdl.upload_lambda(args.profile, 'start-instance-lambda', args.bucket, lambda_start_key, args.region)
+    aws_cdl.upload_lambda(args.profile, 'stop-instance-lambda', args.bucket, lambda_stop_key, args.region)
     try:
-        aws_cdl.create_update_stack(cfn_client, args.template, cfn_parameter, stack_name, args.force)
+        aws_cdl.create_update_stack(cfn_client, args.template, cfn_parameters, stack_name, args.force)
     except Exception as e:
         print(e)
     finally:

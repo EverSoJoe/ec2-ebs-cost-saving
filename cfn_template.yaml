@@ -59,7 +59,7 @@ Resources:
                   - 'ssm:GetParameter'
                   - 'ssm:PutParameter'
                 Resource:
-                  - !Sub "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${InstanceID}"
+                  - !Sub "arn:aws:ec2:${AWS::Region}:${AWS::AccountId}:instance/${InstanceId}"
                   - !Sub "arn:aws:ssm:${AWS::Region}:${AWS::AccountId}:parameter/${SSMPARAMETER}"
   LAMBDASTART:
     Type: AWS::Lambda::Function
@@ -73,7 +73,7 @@ Resources:
           SSM_PARAMETER: !Ref SSMPARAMETER
           INSTANCE_ID: !Ref InstanceId
       Handler: function.handler
-      Role: !Ref ROLE 
+      Role: !GetAtt ROLE.Arn
       Runtime: python3.11
       Timeout: 360
 
@@ -88,6 +88,6 @@ Resources:
           SSM_PARAMETER: !Ref SSMPARAMETER
           INSTANCE_ID: !Ref InstanceId
       Handler: function.handler
-      Role: !Ref ROLE 
+      Role: !GetAtt ROLE.Arn 
       Runtime: python3.11
       Timeout: 360
